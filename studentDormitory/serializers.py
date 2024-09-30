@@ -34,7 +34,8 @@ class RepairRequestsSerializer(serializers.ModelSerializer):
 	room_id = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all(), write_only=True, source="room")
 	staff = StaffSerializer(read_only=True)
 	staff_id = serializers.PrimaryKeyRelatedField(queryset=Staff.objects.all(), write_only=True, source="staff")
+	status_display = serializers.CharField(source='get_status_display', read_only=True)
 
 	class Meta:
 		model = RepairRequests
-		fields = ["id", "date", "description", "status", "room", "room_id", "staff", "staff_id"]
+		fields = ["id", "date", "description", "status", 'status_display', "room", "room_id", "staff", "staff_id"]
