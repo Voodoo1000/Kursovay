@@ -10,7 +10,7 @@
 					aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-				<div class="collapse navbar-collapse" id="navbarNav">
+				<div class="collapse navbar-collapse justify-content-between" id="navbarNav">
 					<ul class="navbar-nav">
 						<li class="nav-item">
 							<router-link class="nav-link" to="/">Студенты</router-link>
@@ -28,13 +28,29 @@
 							<router-link class="nav-link" to="/repairRequests">Заявки на ремонт</router-link>
 						</li>
 					</ul>
+					<ul class="navbar-nav">
+						<li class="nav-item dropdown">
+							<a class="nav-item dropdown-toggle link" href="#" role="button" data-bs-toggle="dropdown"
+								aria-expanded="false" >
+								Пользователь
+							</a>
+							<ul class="dropdown-menu">
+								<li><a class="dropdown-item" href="/admin">Админка</a></li>
+							</ul>
+						</li>
+					</ul>
 				</div>
 			</div>
 		</nav>
 	</div>
 	<div class="container">
-		<router-view/>
+		<router-view />
 	</div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.link {
+  text-decoration: none;
+	color: #666;
+}
+</style>

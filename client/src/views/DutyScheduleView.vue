@@ -37,7 +37,11 @@ async function onDutyRemoveClick(duty) {
 }
 
 async function onDutyEditClick(duty) {
-	dutyToEdit.value = { ...duty };
+	dutyToEdit.value = {
+		id: duty.id,
+		date: duty.date,
+		student_id: duty.student.id,
+	};
 }
 
 async function onUpdateDutyClick() {

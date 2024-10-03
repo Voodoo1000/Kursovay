@@ -13,7 +13,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ["id", "name", "group", "room", "room_id"]
+        fields = ["id", "name", "group", "room", "room_id", "picture"]
 
 
 class DutyScheduleSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class DutyScheduleSerializer(serializers.ModelSerializer):
 class StaffSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Staff
-		fields = ["id", "name", "post"]
+		fields = ["id", "name", "post", "picture"]
 
 class RepairRequestsSerializer(serializers.ModelSerializer):
 	room = RoomSerializer(read_only=True)

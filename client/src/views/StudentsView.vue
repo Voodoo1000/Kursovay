@@ -3,8 +3,8 @@ import axios from 'axios';
 import { computed, ref, onBeforeMount } from 'vue';
 import _ from 'lodash';
 
-const students = ref([]);
-const rooms = ref([])
+const students = ref({});
+const rooms = ref({})
 const studentToAdd = ref({
 	name: '',
 	group: '',
@@ -15,6 +15,17 @@ const studentToEdit = ref({
 	group: '',
 	room: null
 });
+const studentsPictureRef = ref();
+const studentsPictureRefEdit = ref();
+const studentAddImageUrl = ref();
+const studentEditImageUrl = ref();
+const selectedImageUrl = ref();
+
+function openImageModal(imageUrl) {
+	selectedImageUrl.value = imageUrl;
+	const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+	imageModal.show();
+}
 
 async function fetchStudents() {
 	const r = await axios.get("/api/students/")
@@ -27,10 +38,27 @@ async function fetchRooms() {
 }
 
 async function onStudentAdd() {
-	await axios.post("/api/students/", {
-		...studentToAdd.value
+	const formData = new FormData();
+
+	formData.append('picture', studentsPictureRef.value.files[0]);
+
+	formData.set('name', studentToAdd.value.name)
+	formData.set('group', studentToAdd.value.group)
+	formData.set('room_id', studentToAdd.value.room_id)
+
+	await axios.post("/api/students/", formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
 	});
 	await fetchStudents();
+}
+
+async function studentAddPictureChange() {
+	studentAddImageUrl.value = URL.createObjectURL(studentsPictureRef.value.files[0])
+}
+async function studentEditPictureChange() {
+	studentEditImageUrl.value = URL.createObjectURL(studentsPictureRefEdit.value.files[0])
 }
 
 async function onStudentRemoveClick(student) {
@@ -39,12 +67,29 @@ async function onStudentRemoveClick(student) {
 }
 
 async function onStudentEditClick(student) {
-	studentToEdit.value = { ...student };
+	studentToEdit.value = {
+		id: student.id,
+		name: student.name,
+		group: student.group,
+		room_id: student.room.id,
+		picture: student.picture
+	};
+	studentEditImageUrl.value = student.picture;
 }
 
 async function OnUpdateStudentClick() {
-	await axios.put(`/api/students/${studentToEdit.value.id}/`, {
-		...studentToEdit.value,
+	const formData = new FormData();
+
+	formData.append('picture', studentsPictureRefEdit.value.files[0]);
+
+	formData.set('name', studentToEdit.value.name);
+	formData.set('group', studentToEdit.value.group);
+	formData.set('room_id', studentToEdit.value.room_id);
+
+	await axios.put(`/api/students/${studentToEdit.value.id}/`, formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data'
+		}
 	});
 	await fetchStudents();
 }
@@ -64,6 +109,13 @@ onBeforeMount(async () => {
 						<input type="text" class="form-control" v-model="studentToAdd.name" required>
 						<label for="floatingInput">ФИО</label>
 					</div>
+				</div>
+				<div class="col-3">
+					<input class="form-control" type="file" ref="studentsPictureRef" @change="studentAddPictureChange()"
+						required>
+				</div>
+				<div class="col-auto">
+					<img :src="studentAddImageUrl" style="max-height: 60px;" alt="">
 				</div>
 				<div class="col-2">
 					<div class="form-floating">
@@ -96,6 +148,10 @@ onBeforeMount(async () => {
 			</div>
 			<div>
 				{{ item.room.number }}
+			</div>
+			<div v-show="item.picture">
+				<img :src="item.picture" style="max-height: 60px;" @click="openImageModal(item.picture)" alt="Картинка студента"
+					data-bs-toggle="modal" data-bs-target="#imageModal">
 			</div>
 			<div>
 				<button class="btn btn-success" @click="onStudentEditClick(item)" data-bs-toggle="modal"
@@ -140,11 +196,33 @@ onBeforeMount(async () => {
 							</div>
 						</div>
 					</div>
+					<div class="row p-1">
+						<div class="col-6">
+							<input class="form-control" type="file" ref="studentsPictureRefEdit" @change="studentEditPictureChange()"
+								required>
+						</div>
+						<div class="col-auto">
+							<img :src="studentEditImageUrl" style="max-height: 60px;" alt="">
+						</div>
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
 					<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
 						@click="OnUpdateStudentClick()">Сохранить</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Модальное окно для просмотра картинки -->
+	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-body text-center">
+					<img :src="selectedImageUrl" alt="Просмотр изображения" class="img-fluid">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
 				</div>
 			</div>
 		</div>
@@ -159,9 +237,12 @@ onBeforeMount(async () => {
 	border: 1px solid silver;
 	border-radius: 8px;
 	display: grid;
-	grid-template-columns: 0.5fr 0.25fr 1fr auto auto;
+	grid-template-columns: 0.5fr 0.25fr 0.25fr 1fr auto auto;
 	gap: 8px;
 	align-items: center;
+}
 
+.student-item img {
+	cursor: pointer;
 }
 </style>

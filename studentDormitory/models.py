@@ -4,6 +4,7 @@ class Student(models.Model):
 	name = models.TextField("ФИО")
 	group = models.TextField("Группа", default="ИСТБ-22-2")
 	room = models.ForeignKey("Room", on_delete=models.CASCADE, null=True)
+	picture = models.ImageField("Изображение", null=True, upload_to="students")
 
 	class Meta:
 		verbose_name = "Студент"
@@ -33,6 +34,7 @@ class DutySchedule(models.Model):
 class Staff(models.Model):
 	name = models.TextField("ФИО")
 	post = models.TextField("Должность")
+	picture = models.ImageField("Изображение", null=True, upload_to="staff")
 
 	class Meta:
 			verbose_name = "Персонал"

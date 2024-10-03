@@ -56,7 +56,14 @@ async function onRequestRemoveClick(request) {
 }
 
 async function onRequestEditClick(request) {
-	requestToEdit.value = { ...request };
+	requestToEdit.value = { 
+		id: request.id,
+		date: request.date,
+		description: request.description,
+		status: request.status,
+		room_id: request.room.id,
+		staff_id: request.staff.id
+	 };
 }
 
 async function OnUpdateRequestClick() {
