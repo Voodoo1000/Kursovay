@@ -136,7 +136,7 @@ onBeforeMount(async () => {
 		</div>
 	</div>
 </template>
-<style scoped>
+<style lang="scss" scoped>
 .duty-item {
 	padding: 0.5rem;
 	margin: 0.5rem 0;

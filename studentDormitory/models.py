@@ -5,6 +5,7 @@ class Student(models.Model):
 	group = models.TextField("Группа", default="ИСТБ-22-2")
 	room = models.ForeignKey("Room", on_delete=models.CASCADE, null=True)
 	picture = models.ImageField("Изображение", null=True, upload_to="students")
+	user = models.ForeignKey('auth.User', verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
 
 	class Meta:
 		verbose_name = "Студент"
@@ -15,6 +16,7 @@ class Student(models.Model):
 
 class Room(models.Model):
 	number = models.TextField("Номер комнаты")
+	user = models.ForeignKey('auth.User', verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
 
 	class Meta:
 			verbose_name = "Комната"
@@ -26,6 +28,7 @@ class Room(models.Model):
 class DutySchedule(models.Model):
 	date = models.DateField("Дата")
 	student = models.ForeignKey("Student", on_delete=models.CASCADE, null=True)
+	user = models.ForeignKey('auth.User', verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
 
 	class Meta:
 			verbose_name = "График дежурств"
@@ -35,6 +38,7 @@ class Staff(models.Model):
 	name = models.TextField("ФИО")
 	post = models.TextField("Должность")
 	picture = models.ImageField("Изображение", null=True, upload_to="staff")
+	user = models.ForeignKey('auth.User', verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
 
 	class Meta:
 			verbose_name = "Персонал"
@@ -56,6 +60,7 @@ class RepairRequests(models.Model):
 	status = models.CharField("Статус заявки", max_length=20, choices=STATUS_CHOICES, default="new")
 	room = models.ForeignKey("Room", on_delete=models.CASCADE, null=True)
 	staff = models.ForeignKey("Staff", on_delete=models.CASCADE, null=True)
+	user = models.ForeignKey('auth.User', verbose_name="Пользователь", on_delete=models.CASCADE, null=True)
 
 	class Meta:
 			verbose_name = "Заявка на ремонт"

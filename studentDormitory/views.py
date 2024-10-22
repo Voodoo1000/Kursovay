@@ -10,4 +10,4 @@ class ShowStudentsDormitoryView(TemplateView):
 		context['students'] = Student.objects.all()
 
 		return context
-
+	

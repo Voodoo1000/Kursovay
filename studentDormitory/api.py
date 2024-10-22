@@ -15,6 +15,13 @@ class StudentViewset(
 	queryset = Student.objects.all()
 	serializer_class = StudentSerializer
 	authentication_classes =  (CsrfExemptSessionAuthentication, BasicAuthentication)
+	def get_queryset(self):
+		qs = super().get_queryset()
+		
+		if self.request.user.is_superuser:
+				return qs
+		
+		return qs.filter(user=self.request.user)
 
 class RoomViewset(
 	mixins.CreateModelMixin,
@@ -26,6 +33,13 @@ class RoomViewset(
 	queryset = Room.objects.all()
 	serializer_class = RoomSerializer
 	authentication_classes =  (CsrfExemptSessionAuthentication, BasicAuthentication)
+	def get_queryset(self):
+		qs = super().get_queryset()
+		
+		if self.request.user.is_superuser:
+				return qs
+		
+		return qs.filter(user=self.request.user)
 
 class DutyScheduleViewset(
 	mixins.CreateModelMixin,
@@ -37,6 +51,13 @@ class DutyScheduleViewset(
 	queryset = DutySchedule.objects.all()
 	serializer_class = DutyScheduleSerializer
 	authentication_classes =  (CsrfExemptSessionAuthentication, BasicAuthentication)
+	def get_queryset(self):
+		qs = super().get_queryset()
+		
+		if self.request.user.is_superuser:
+				return qs
+		
+		return qs.filter(user=self.request.user)
 
 class StaffViewset(
 	mixins.CreateModelMixin,
@@ -48,6 +69,13 @@ class StaffViewset(
 	queryset = Staff.objects.all()
 	serializer_class = StaffSerializer
 	authentication_classes =  (CsrfExemptSessionAuthentication, BasicAuthentication)
+	def get_queryset(self):
+		qs = super().get_queryset()
+		
+		if self.request.user.is_superuser:
+				return qs
+		
+		return qs.filter(user=self.request.user)
 
 class RepairRequestsViewset(
 	mixins.CreateModelMixin,
@@ -59,3 +87,10 @@ class RepairRequestsViewset(
 	queryset = RepairRequests.objects.all()
 	serializer_class = RepairRequestsSerializer
 	authentication_classes =  (CsrfExemptSessionAuthentication, BasicAuthentication)
+	def get_queryset(self):
+		qs = super().get_queryset()
+		
+		if self.request.user.is_superuser:
+				return qs
+		
+		return qs.filter(user=self.request.user)
