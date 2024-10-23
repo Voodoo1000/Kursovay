@@ -13,6 +13,12 @@ const dutyToEdit = ref({
 	date: '',
 	student: null
 });
+const stats = ref({});
+
+async function fetchStats() {
+	const r = await axios.get("/api/dutySchedule/stats/");
+	stats.value = r.data;
+}
 
 async function fetchStudents() {
 	const r = await axios.get("/api/students/")
@@ -79,6 +85,14 @@ onBeforeMount(async () => {
 				</div>
 			</div>
 		</form>
+		<div class="row pt-2">
+			<div class="col">
+				<div class="col-auto d-flex align-self-center">
+					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
+					data-bs-target="#statsModal">Статистика</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div>
@@ -131,6 +145,24 @@ onBeforeMount(async () => {
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
 					<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
 						@click="onUpdateDutyClick()">Сохранить</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Модальное окно для статистики -->
+	<div class="modal fade" id="statsModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Статистика графиков</h5>
+				</div>
+				<div class="modal-body">
+					<p>Количество комнат: {{ stats.count }}</p>
+					<p>Максимальный ID графиков: {{ stats.max }}</p>
+					<p>Минимальный ID графиков: {{ stats.min }}</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
 				</div>
 			</div>
 		</div>

@@ -17,6 +17,7 @@ const staffPictureRefEdit = ref();
 const staffAddImageUrl = ref();
 const staffEditImageUrl = ref();
 const selectedImageUrl = ref();
+const stats = ref({});
 
 function openImageModal(imageUrl) {
 	selectedImageUrl.value = imageUrl;
@@ -28,7 +29,10 @@ async function fetchStaff() {
 	const r = await axios.get("/api/staff/")
 	staff.value = r.data
 }
-
+async function fetchStats() {
+	const r = await axios.get("/api/staff/stats/");
+	stats.value = r.data;
+}
 async function onStaffAdd() {
 	const formData = new FormData();
 
@@ -115,6 +119,14 @@ onBeforeMount(async () => {
 				</div>
 			</div>
 		</form>
+		<div class="row pt-2">
+			<div class="col">
+				<div class="col-auto d-flex align-self-center">
+					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
+					data-bs-target="#statsModal">Статистика</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div>
@@ -188,6 +200,24 @@ onBeforeMount(async () => {
 			<div class="modal-content">
 				<div class="modal-body text-center">
 					<img :src="selectedImageUrl" alt="Просмотр изображения" class="img-fluid">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Модальное окно для статистики -->
+	<div class="modal fade" id="statsModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Статистика персонала</h5>
+				</div>
+				<div class="modal-body">
+					<p>Количество комнат: {{ stats.count }}</p>
+					<p>Максимальный ID персонала: {{ stats.max }}</p>
+					<p>Минимальный ID персонала: {{ stats.min }}</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>

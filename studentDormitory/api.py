@@ -1,9 +1,12 @@
 from rest_framework.viewsets import GenericViewSet
-from rest_framework import mixins, viewsets 	
+from rest_framework import mixins, viewsets, serializers
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.authentication import BasicAuthentication
 from app.middlewares import CsrfExemptSessionAuthentication
 from studentDormitory.models import Student, Room, DutySchedule, Staff, RepairRequests
 from studentDormitory.serializers import StudentSerializer, RoomSerializer, DutyScheduleSerializer, StaffSerializer, RepairRequestsSerializer
+from django.db.models import Avg, Count, Max, Min
 
 class StudentViewset(
 	mixins.CreateModelMixin,
@@ -22,6 +25,25 @@ class StudentViewset(
 				return qs
 		
 		return qs.filter(user=self.request.user)
+	
+	class StatsSerializer(serializers.Serializer):
+		count = serializers.IntegerField()
+		avg = serializers.FloatField()
+		max = serializers.IntegerField()
+		min = serializers.IntegerField()
+
+	@action(detail=False, methods=["GET"], url_path="stats")
+	def get_stats(self, *args, **kwargs):
+		stats = Student.objects.aggregate(
+			count = Count("*"),
+			avg = Avg("id"),
+			max = Max("id"),
+			min = Min("id"),
+		)
+
+		serializer = self.StatsSerializer(instance = stats)
+
+		return Response(serializer.data)
 
 class RoomViewset(
 	mixins.CreateModelMixin,
@@ -40,6 +62,25 @@ class RoomViewset(
 				return qs
 		
 		return qs.filter(user=self.request.user)
+	
+	class StatsSerializer(serializers.Serializer):
+		count = serializers.IntegerField()
+		avg = serializers.FloatField()
+		max = serializers.IntegerField()
+		min = serializers.IntegerField()
+
+	@action(detail=False, methods=["GET"], url_path="stats")
+	def get_stats(self, *args, **kwargs):
+		stats = Room.objects.aggregate(
+			count = Count("*"),
+			avg = Avg("id"),
+			max = Max("id"),
+			min = Min("id"),
+		)
+
+		serializer = self.StatsSerializer(instance = stats)
+
+		return Response(serializer.data)
 
 class DutyScheduleViewset(
 	mixins.CreateModelMixin,
@@ -58,6 +99,25 @@ class DutyScheduleViewset(
 				return qs
 		
 		return qs.filter(user=self.request.user)
+	
+	class StatsSerializer(serializers.Serializer):
+		count = serializers.IntegerField()
+		avg = serializers.FloatField()
+		max = serializers.IntegerField()
+		min = serializers.IntegerField()
+
+	@action(detail=False, methods=["GET"], url_path="stats")
+	def get_stats(self, *args, **kwargs):
+		stats = DutySchedule.objects.aggregate(
+			count = Count("*"),
+			avg = Avg("id"),
+			max = Max("id"),
+			min = Min("id"),
+		)
+
+		serializer = self.StatsSerializer(instance = stats)
+
+		return Response(serializer.data)
 
 class StaffViewset(
 	mixins.CreateModelMixin,
@@ -76,6 +136,25 @@ class StaffViewset(
 				return qs
 		
 		return qs.filter(user=self.request.user)
+	
+	class StatsSerializer(serializers.Serializer):
+		count = serializers.IntegerField()
+		avg = serializers.FloatField()
+		max = serializers.IntegerField()
+		min = serializers.IntegerField()
+
+	@action(detail=False, methods=["GET"], url_path="stats")
+	def get_stats(self, *args, **kwargs):
+		stats = Staff.objects.aggregate(
+			count = Count("*"),
+			avg = Avg("id"),
+			max = Max("id"),
+			min = Min("id"),
+		)
+
+		serializer = self.StatsSerializer(instance = stats)
+
+		return Response(serializer.data)
 
 class RepairRequestsViewset(
 	mixins.CreateModelMixin,
@@ -94,3 +173,22 @@ class RepairRequestsViewset(
 				return qs
 		
 		return qs.filter(user=self.request.user)
+	
+	class StatsSerializer(serializers.Serializer):
+		count = serializers.IntegerField()
+		avg = serializers.FloatField()
+		max = serializers.IntegerField()
+		min = serializers.IntegerField()
+
+	@action(detail=False, methods=["GET"], url_path="stats")
+	def get_stats(self, *args, **kwargs):
+		stats = RepairRequests.objects.aggregate(
+			count = Count("*"),
+			avg = Avg("id"),
+			max = Max("id"),
+			min = Min("id"),
+		)
+
+		serializer = self.StatsSerializer(instance = stats)
+
+		return Response(serializer.data)

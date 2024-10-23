@@ -20,6 +20,7 @@ const studentsPictureRefEdit = ref();
 const studentAddImageUrl = ref();
 const studentEditImageUrl = ref();
 const selectedImageUrl = ref();
+const stats = ref({});
 
 function openImageModal(imageUrl) {
 	selectedImageUrl.value = imageUrl;
@@ -36,6 +37,11 @@ async function fetchRooms() {
 	const r = await axios.get("/api/rooms/")
 	rooms.value = r.data
 }
+async function fetchStats() {
+	const r = await axios.get("/api/students/stats/");
+	stats.value = r.data;
+}
+
 
 async function onStudentAdd() {
 	const formData = new FormData();
@@ -111,8 +117,7 @@ onBeforeMount(async () => {
 					</div>
 				</div>
 				<div class="col-3">
-					<input class="form-control" type="file" ref="studentsPictureRef" @change="studentAddPictureChange()"
-						required>
+					<input class="form-control" type="file" ref="studentsPictureRef" @change="studentAddPictureChange()" required>
 				</div>
 				<div class="col-auto">
 					<img :src="studentAddImageUrl" style="max-height: 60px;" alt="">
@@ -136,6 +141,14 @@ onBeforeMount(async () => {
 				</div>
 			</div>
 		</form>
+		<div class="row pt-2">
+			<div class="col">
+				<div class="col-auto d-flex align-self-center">
+					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
+					data-bs-target="#statsModal">Статистика</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div>
@@ -227,7 +240,24 @@ onBeforeMount(async () => {
 			</div>
 		</div>
 	</div>
-
+	<!-- Модальное окно для статистики -->
+	<div class="modal fade" id="statsModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Статистика студентов</h5>
+				</div>
+				<div class="modal-body">
+					<p>Количество студентов: {{ stats.count }}</p>
+					<p>Максимальный ID студента: {{ stats.max }}</p>
+					<p>Минимальный ID студента: {{ stats.min }}</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <style lang="scss" scoped>
