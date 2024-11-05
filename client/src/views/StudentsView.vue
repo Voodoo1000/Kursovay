@@ -145,7 +145,7 @@ onBeforeMount(async () => {
 			<div class="col">
 				<div class="col-auto d-flex align-self-center">
 					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
-					data-bs-target="#statsModal">Статистика</button>
+						data-bs-target="#statsModal">Статистика</button>
 				</div>
 			</div>
 		</div>
@@ -166,14 +166,14 @@ onBeforeMount(async () => {
 				<img :src="item.picture" style="max-height: 60px;" @click="openImageModal(item.picture)" alt="Картинка студента"
 					data-bs-toggle="modal" data-bs-target="#imageModal">
 			</div>
-			<div>
-				<button class="btn btn-success" @click="onStudentEditClick(item)" data-bs-toggle="modal"
-					data-bs-target="#editStudentModal">
-					<i class="bi bi-pen"></i>
-				</button>
-			</div>
-			<div>
-				<button class="btn btn-danger" @click="onStudentRemoveClick(item)"><i class="bi bi-trash"></i></button>
+			<div class="d-flex justify-content-end">
+					<button class="btn btn-success me-1" @click="onStudentEditClick(item)" data-bs-toggle="modal"
+						data-bs-target="#editStudentModal">
+						<i class="bi bi-pen"></i>
+					</button>
+					<button class="btn btn-danger" @click="onStudentRemoveClick(item)">
+						<i class="bi bi-trash"></i>
+					</button>
 			</div>
 		</div>
 	</div>
@@ -267,7 +267,7 @@ onBeforeMount(async () => {
 	border: 1px solid silver;
 	border-radius: 8px;
 	display: grid;
-	grid-template-columns: 0.5fr 0.25fr 0.25fr 1fr auto auto;
+	grid-template-columns: 0.5fr 0.25fr 0.25fr 1fr auto ;
 	gap: 8px;
 	align-items: center;
 }

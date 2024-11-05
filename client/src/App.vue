@@ -1,4 +1,33 @@
 <script setup>
+import { storeToRefs } from 'pinia';
+import useUserStore from './stores/userStore';
+import { useToast } from 'vue-toastification';
+import axios from 'axios';
+import Cookies from 'js-cookie'; 
+
+const userStore = useUserStore();
+const { isAuthenticated,	username,	userId } = storeToRefs(userStore);
+const toast = useToast();
+
+async function logout() {
+    const csrfToken = Cookies.get('csrftoken'); // Получаем CSRF-токен
+    try {
+        const response = await axios.post('/api/user/logout/', {}, {
+            headers: {
+                'X-CSRFToken': csrfToken // Убедитесь, что CSRF-токен передан
+            }
+        });
+        if (response.data.success) {
+            userStore.resetUser(); // Используем метод для сброса состояния
+            window.location.reload(); // Обновление страницы
+        } else {
+            toast.error('Ошибка выхода, попробуйте еще раз.');
+        }
+    } catch (error) {
+        console.error('Ошибка выхода:', error);
+        toast.error('Ошибка выхода, попробуйте еще раз.');
+    }
+}
 
 </script>
 <template>
@@ -31,11 +60,19 @@
 					<ul class="navbar-nav">
 						<li class="nav-item dropdown">
 							<a class="nav-item dropdown-toggle link" href="#" role="button" data-bs-toggle="dropdown"
-								aria-expanded="false" >
-								Пользователь
+								aria-expanded="false">
+								{{ username }}
 							</a>
 							<ul class="dropdown-menu">
-								<li><a class="dropdown-item" href="/admin">Админка</a></li>
+								<li class="nav-item">
+									<router-link class="dropdown-item" to="/login">Войти</router-link>
+								</li>
+								<li class="nav-item">
+									<a class="dropdown-item" @click.prevent="logout()">Выход</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="/admin">Админка</a>
+								</li>
 							</ul>
 						</li>
 					</ul>
@@ -50,7 +87,7 @@
 
 <style lang="scss" scoped>
 .link {
-  text-decoration: none;
+	text-decoration: none;
 	color: #666;
 }
 </style>

@@ -141,13 +141,11 @@ onBeforeMount(async () => {
 				<img :src="item.picture" style="max-height: 60px;" @click="openImageModal(item.picture)"
 					alt="Картинка персонала" data-bs-toggle="modal" data-bs-target="#imageModal">
 			</div>
-			<div>
-				<button class="btn btn-success" @click="onStaffEditClick(item)" data-bs-toggle="modal"
+			<div class="d-flex justify-content-end">
+				<button class="btn btn-success me-1" @click="onStaffEditClick(item)" data-bs-toggle="modal"
 					data-bs-target="#editStaffModal">
 					<i class="bi bi-pen"></i>
 				</button>
-			</div>
-			<div>
 				<button class="btn btn-danger" @click="onStaffRemoveClick(item)"><i class="bi bi-trash"></i></button>
 			</div>
 		</div>

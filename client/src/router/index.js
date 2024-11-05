@@ -3,6 +3,7 @@ import RepairRequestsView from '@/views/RepairRequestsView.vue'
 import RoomsView from '@/views/RoomsView.vue'
 import StaffView from '@/views/StaffView.vue'
 import StudentsView from '@/views/StudentsView.vue'
+import LoginView from '@/views/LoginView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -32,6 +33,11 @@ const router = createRouter({
       path: "/repairRequests",
       name: "RepairRequestsView",
       component: RepairRequestsView
+    },
+    {
+      path: "/login",
+      name: "LoginView",
+      component: LoginView
     },
   ]
 })

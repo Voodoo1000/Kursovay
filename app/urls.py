@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from studentDormitory.api import StudentViewset, RoomViewset, DutyScheduleViewset, StaffViewset, RepairRequestsViewset
+from studentDormitory.api import StudentViewset, RoomViewset, DutyScheduleViewset, StaffViewset, RepairRequestsViewset, UserViewset
 from studentDormitory import views
 from django.conf import settings
 from django.conf.urls.static import static
@@ -28,6 +28,7 @@ router.register("rooms", RoomViewset, basename="rooms")
 router.register("dutySchedule", DutyScheduleViewset, basename="dutySchedule")
 router.register("staff", StaffViewset, basename="staff")
 router.register("repairRequests", RepairRequestsViewset, basename="repairRequests")
+router.register("user", UserViewset, basename="user")
 
 urlpatterns = [
 	path('', views.ShowStudentsDormitoryView.as_view()),

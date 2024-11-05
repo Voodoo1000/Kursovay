@@ -7,6 +7,7 @@ from app.middlewares import CsrfExemptSessionAuthentication
 from studentDormitory.models import Student, Room, DutySchedule, Staff, RepairRequests
 from studentDormitory.serializers import StudentSerializer, RoomSerializer, DutyScheduleSerializer, StaffSerializer, RepairRequestsSerializer
 from django.db.models import Avg, Count, Max, Min
+from django.contrib.auth import authenticate, login, logout
 
 class StudentViewset(
 	mixins.CreateModelMixin,
@@ -192,3 +193,35 @@ class RepairRequestsViewset(
 		serializer = self.StatsSerializer(instance = stats)
 
 		return Response(serializer.data)
+	
+	
+class UserViewset(GenericViewSet):
+	@action(url_path="info", methods=["GET"], detail=False)
+	def get_info(self, request,  *args, **kwargs):
+		data={
+			"is_authenticated": request.user.is_authenticated
+		}
+		if request.user.is_authenticated:
+			data.update({
+				"username": request.user.username,
+				"user_id": request.user.id
+			})
+
+		return Response(data)
+	
+	@action(url_path="login", methods=["POST"], detail=False)
+	def login(self, request, *args, **kwargs):
+		username = request.data.get("user")
+		password = request.data.get("password")
+
+		user = authenticate(request, username=username, password=password)
+		if user is not None:
+				login(request, user)
+				return Response({"success": True})
+		else:
+				return Response({"error": "Invalid credentials"}, status=400)
+
+	@action(url_path="logout", methods=["POST"], detail=False)
+	def logout(self, request, *args, **kwargs):
+			logout(request)
+			return Response({"success": True})
