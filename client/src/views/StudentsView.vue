@@ -100,6 +100,26 @@ async function OnUpdateStudentClick() {
 	await fetchStudents();
 }
 
+async function exportToExcel() {
+	const response = await axios.get('/api/students/export-excel', { responseType: 'blob' });
+	const url = window.URL.createObjectURL(new Blob([response.data]));
+	const link = document.createElement('a');
+	link.href = url;
+	link.setAttribute('download', 'students.xlsx');
+	document.body.appendChild(link);
+	link.click();
+}
+
+async function exportToWord() {
+  const response = await axios.get('/api/students/export-word', { responseType: 'blob' });
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', 'students.docx');
+  document.body.appendChild(link);
+  link.click();
+}
+
 onBeforeMount(async () => {
 	await fetchStudents()
 	await fetchRooms()
@@ -142,11 +162,10 @@ onBeforeMount(async () => {
 			</div>
 		</form>
 		<div class="row pt-2">
-			<div class="col">
-				<div class="col-auto d-flex align-self-center">
-					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
-						data-bs-target="#statsModal">Статистика</button>
-				</div>
+			<div class="col d-flex gap-2">
+				<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal" data-bs-target="#statsModal">Статистика</button>
+				<button class="btn btn-primary" @click="exportToExcel()">Экспорт в Excel</button>
+				<button class="btn btn-primary" @click="exportToWord()">Экспорт в Word</button>
 			</div>
 		</div>
 	</div>
@@ -167,13 +186,13 @@ onBeforeMount(async () => {
 					data-bs-toggle="modal" data-bs-target="#imageModal">
 			</div>
 			<div class="d-flex justify-content-end">
-					<button class="btn btn-success me-1" @click="onStudentEditClick(item)" data-bs-toggle="modal"
-						data-bs-target="#editStudentModal">
-						<i class="bi bi-pen"></i>
-					</button>
-					<button class="btn btn-danger" @click="onStudentRemoveClick(item)">
-						<i class="bi bi-trash"></i>
-					</button>
+				<button class="btn btn-success me-1" @click="onStudentEditClick(item)" data-bs-toggle="modal"
+					data-bs-target="#editStudentModal">
+					<i class="bi bi-pen"></i>
+				</button>
+				<button class="btn btn-danger" @click="onStudentRemoveClick(item)">
+					<i class="bi bi-trash"></i>
+				</button>
 			</div>
 		</div>
 	</div>
@@ -267,7 +286,7 @@ onBeforeMount(async () => {
 	border: 1px solid silver;
 	border-radius: 8px;
 	display: grid;
-	grid-template-columns: 0.5fr 0.25fr 0.25fr 1fr auto ;
+	grid-template-columns: 0.5fr 0.25fr 0.25fr 1fr auto;
 	gap: 8px;
 	align-items: center;
 }

@@ -8,6 +8,10 @@ from studentDormitory.models import Student, Room, DutySchedule, Staff, RepairRe
 from studentDormitory.serializers import StudentSerializer, RoomSerializer, DutyScheduleSerializer, StaffSerializer, RepairRequestsSerializer
 from django.db.models import Avg, Count, Max, Min
 from django.contrib.auth import authenticate, login, logout
+from django.http import FileResponse
+from openpyxl import Workbook
+from docx import Document 
+import io
 
 class StudentViewset(
 	mixins.CreateModelMixin,
@@ -45,6 +49,40 @@ class StudentViewset(
 		serializer = self.StatsSerializer(instance = stats)
 
 		return Response(serializer.data)
+
+	@action(detail=False, methods=["GET"], url_path="export-excel")
+	def export_to_excel(self, request, *args, **kwargs):
+		workbook = Workbook()
+		sheet = workbook.active
+		sheet.title = "Students"
+		sheet.append(["ID", "ФИО", "Группа", "Номер комнаты"])
+		for student in Student.objects.select_related('room').all():
+			sheet.append([student.id, student.name, student.group, student.room.number])
+
+		file_stream = io.BytesIO()
+		workbook.save(file_stream)
+		file_stream.seek(0)
+
+		response = FileResponse(file_stream, as_attachment=True, filename="students.xlsx")
+		return response
+
+	@action(detail=False, methods=["GET"], url_path="export-word")
+	def export_to_word(self, request, *args, **kwargs):
+		document = Document()
+		document.add_heading("Students List", level=1)
+
+		# Данные
+		for student in Student.objects.select_related('room').all():
+				document.add_paragraph(f"ID: {student.id}, ФИО: {student.name}, Группа: {student.group}, Номер комнаты: {student.room.number}")
+
+		# Создаем файл в памяти
+		file_stream = io.BytesIO()
+		document.save(file_stream)
+		file_stream.seek(0)
+
+		response = FileResponse(file_stream, as_attachment=True, filename="students.docx")
+		return response
+
 
 class RoomViewset(
 	mixins.CreateModelMixin,
