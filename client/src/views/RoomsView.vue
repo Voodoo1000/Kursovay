@@ -4,7 +4,6 @@ import { computed, ref, onBeforeMount } from 'vue';
 import _ from 'lodash';
 
 const rooms = ref([])
-
 const roomToAdd = ref({
 	number: '',
 });
@@ -12,6 +11,18 @@ const roomToEdit = ref({
 	number: '',
 });
 const stats = ref({});
+
+const filters = ref({
+	number: '',
+});
+
+const filteredRooms = computed(() => {
+	return rooms.value.filter((room) => {
+		return (
+			(!filters.value.number || room.number.toString().includes(filters.value.number))
+		);
+	});
+});
 
 async function fetchStats() {
 	const r = await axios.get("/api/rooms/stats/");
@@ -68,15 +79,15 @@ onBeforeMount(async () => {
 		</form>
 		<div class="row pt-2">
 			<div class="col">
-				<div class="col-auto d-flex align-self-center">
-					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
-					data-bs-target="#statsModal">Статистика</button>
-				</div>
+				<input type="text" class="form-control" v-model="filters.number" placeholder="Фильтр по номеру комнаты" />
+			</div>
+			<div class="col-auto d-flex align-self-center">
+				<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal" data-bs-target="#statsModal">Статистика</button>
 			</div>
 		</div>
 	</div>
 	<div>
-		<div v-for="item in rooms" class="room-item">
+		<div v-for="item in filteredRooms" :key="item.id" class="room-item">
 			<div>
 				{{ item.number }}
 			</div>
@@ -87,7 +98,9 @@ onBeforeMount(async () => {
 				</button>
 			</div>
 			<div>
-				<button class="btn btn-danger" @click="onRoomRemoveClick(item)"><i class="bi bi-trash"></i></button>
+				<button class="btn btn-danger" @click="onRoomRemoveClick(item)">
+					<i class="bi bi-trash"></i>
+				</button>
 			</div>
 		</div>
 	</div>

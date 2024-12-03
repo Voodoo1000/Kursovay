@@ -19,6 +19,20 @@ const staffEditImageUrl = ref();
 const selectedImageUrl = ref();
 const stats = ref({});
 
+const filters = ref({
+	name: '',
+	post: '',
+});
+
+const filteredStaff = computed(() => {
+	return staff.value.filter((member) => {
+		return (
+			(!filters.value.name || member.name.toLowerCase().includes(filters.value.name.toLowerCase())) &&
+			(!filters.value.post || member.post.toLowerCase().includes(filters.value.post.toLowerCase()))
+		);
+	});
+});
+
 function openImageModal(imageUrl) {
 	selectedImageUrl.value = imageUrl;
 	const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
@@ -121,16 +135,20 @@ onBeforeMount(async () => {
 		</form>
 		<div class="row pt-2">
 			<div class="col">
-				<div class="col-auto d-flex align-self-center">
-					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
+				<input type="text" class="form-control" v-model="filters.name" placeholder="Фильтр по имени" />
+			</div>
+			<div class="col">
+				<input type="text" class="form-control" v-model="filters.post" placeholder="Фильтр по должности" />
+			</div>
+			<div class="col-auto d-flex align-self-center">
+				<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
 					data-bs-target="#statsModal">Статистика</button>
-				</div>
 			</div>
 		</div>
 	</div>
 
 	<div>
-		<div v-for="item in staff" class="staff-item">
+		<div v-for="item in filteredStaff" :key="item.id" class="staff-item">
 			<div>
 				{{ item.name }}
 			</div>
@@ -235,6 +253,7 @@ onBeforeMount(async () => {
 	gap: 8px;
 	align-items: center;
 }
+
 .staff-item img {
 	cursor: pointer;
 }

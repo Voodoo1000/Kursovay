@@ -1,5 +1,5 @@
 from rest_framework.viewsets import GenericViewSet
-from rest_framework import mixins, viewsets, serializers
+from rest_framework import mixins, serializers
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.authentication import BasicAuthentication

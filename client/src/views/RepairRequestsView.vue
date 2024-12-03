@@ -29,6 +29,67 @@ const requestToEdit = ref({
 });
 const stats = ref({});
 
+const filters = ref({
+	description: '',
+	year: '',
+	month: '',
+	day: '',
+	status: '',
+	room: '',
+	staff: ''
+});
+
+const filteredRequests = computed(() => {
+	return requests.value.filter(item => {
+		const matchesDescription = !filters.value.description || item.description.toLowerCase().includes(filters.value.description.toLowerCase());
+		const matchesStatus = !filters.value.status || item.status === filters.value.status;
+		const matchesRoom = !filters.value.room || item.room.id === filters.value.room;
+		const matchesStaff = !filters.value.staff || item.staff.id === filters.value.staff;
+
+		const itemDate = new Date(item.date);
+		const matchesYear = !filters.value.year || itemDate.getFullYear() === parseInt(filters.value.year);
+		const matchesMonth = !filters.value.month || itemDate.getMonth() + 1 === parseInt(filters.value.month); 
+		const matchesDay = !filters.value.day || itemDate.getDate() === parseInt(filters.value.day);
+
+		return matchesDescription && matchesStatus && matchesRoom && matchesStaff && matchesYear && matchesMonth && matchesDay;
+	});
+});
+
+const getYears = () => {
+	const years = new Set();
+	requests.value.forEach(request => {
+		const year = new Date(request.date).getFullYear();
+		years.add(year);
+	});
+	return Array.from(years).sort();
+};
+
+const getMonths = () => {
+	return [
+		{ value: '1', label: 'Январь' },
+		{ value: '2', label: 'Февраль' },
+		{ value: '3', label: 'Март' },
+		{ value: '4', label: 'Апрель' },
+		{ value: '5', label: 'Май' },
+		{ value: '6', label: 'Июнь' },
+		{ value: '7', label: 'Июль' },
+		{ value: '8', label: 'Август' },
+		{ value: '9', label: 'Сентябрь' },
+		{ value: '10', label: 'Октябрь' },
+		{ value: '11', label: 'Ноябрь' },
+		{ value: '12', label: 'Декабрь' },
+	];
+};
+
+const getDays = () => {
+	const days = new Set();
+	requests.value.forEach(request => {
+		const day = new Date(request.date).getDate();
+		days.add(day);
+	});
+	return Array.from(days).sort();
+};
+
 async function fetchStats() {
 	const r = await axios.get("/api/repairRequests/stats/");
 	stats.value = r.data;
@@ -61,14 +122,14 @@ async function onRequestRemoveClick(request) {
 }
 
 async function onRequestEditClick(request) {
-	requestToEdit.value = { 
+	requestToEdit.value = {
 		id: request.id,
 		date: request.date,
 		description: request.description,
 		status: request.status,
 		room_id: request.room.id,
 		staff_id: request.staff.id
-	 };
+	};
 }
 
 async function OnUpdateRequestClick() {
@@ -132,31 +193,63 @@ onBeforeMount(async () => {
 		</form>
 		<div class="row pt-2">
 			<div class="col">
+				<input type="text" class="form-control" v-model="filters.description"
+					placeholder="Фильтр по описанию проблемы" />
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.year">
+					<option value="">Все года</option>
+					<option v-for="year in getYears()" :key="year" :value="year">{{ year }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.month">
+					<option value="">Все месяцы</option>
+					<option v-for="month in getMonths()" :key="month.value" :value="month.value">{{ month.label }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.day">
+					<option value="">Все дни</option>
+					<option v-for="day in getDays()" :key="day" :value="day">{{ day }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.status">
+					<option value="">Все статусы</option>
+					<option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.room">
+					<option value="">Все комнаты</option>
+					<option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.number }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.staff">
+					<option value="">Все сотрудники</option>
+					<option v-for="s in staff" :key="s.id" :value="s.id">{{ s.post }} ({{ s.name }})</option>
+				</select>
+			</div>
+		</div>
+		<div class="row pt-2">
+			<div class="col">
 				<div class="col-auto d-flex align-self-center">
 					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
-					data-bs-target="#statsModal">Статистика</button>
+						data-bs-target="#statsModal">Статистика</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div>
-		<div v-for="item in requests" class="request-item">
-			<div>
-				{{ item.description }}
-			</div>
-			<div>
-				{{ item.date }}
-			</div>
-			<div>
-				{{ item.status_display }}
-			</div>
-			<div>
-				{{ item.room.number }}
-			</div>
-			<div>
-				{{ item.staff.post }}({{ item.staff.name }})
-			</div>
+		<div v-for="item in filteredRequests" class="request-item" :key="item.id">
+			<div>{{ item.description }}</div>
+			<div>{{ item.date }}</div>
+			<div>{{ item.status_display }}</div>
+			<div>{{ item.room.number }}</div>
+			<div>{{ item.staff.post }} ({{ item.staff.name }})</div>
 			<div>
 				<button class="btn btn-success" @click="onRequestEditClick(item)" data-bs-toggle="modal"
 					data-bs-target="#editRequestModal">
@@ -164,7 +257,9 @@ onBeforeMount(async () => {
 				</button>
 			</div>
 			<div>
-				<button class="btn btn-danger" @click="onRequestRemoveClick(item)"><i class="bi bi-trash"></i></button>
+				<button class="btn btn-danger" @click="onRequestRemoveClick(item)">
+					<i class="bi bi-trash"></i>
+				</button>
 			</div>
 		</div>
 	</div>

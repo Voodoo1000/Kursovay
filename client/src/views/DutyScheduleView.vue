@@ -15,6 +15,60 @@ const dutyToEdit = ref({
 });
 const stats = ref({});
 
+const filters = ref({
+	year: '',
+	month: '',
+	day: '',
+	studentName: '',
+});
+
+const filteredDuty = computed(() => {
+	return duty.value.filter(item => {
+		const itemDate = new Date(item.date);
+		const matchesYear = !filters.value.year || itemDate.getFullYear() === parseInt(filters.value.year);
+		const matchesMonth = !filters.value.month || itemDate.getMonth() + 1 === parseInt(filters.value.month); 
+		const matchesDay = !filters.value.day || itemDate.getDate() === parseInt(filters.value.day);
+
+		const matchesStudent = !filters.value.studentName || item.student.name.toLowerCase().includes(filters.value.studentName.toLowerCase());
+		return matchesYear && matchesMonth && matchesDay && matchesStudent;
+	});
+});
+
+const getYears = () => {
+  const years = new Set();
+  duty.value.forEach(item => {
+    const year = new Date(item.date).getFullYear();
+    years.add(year);
+  });
+  return Array.from(years).sort();
+};
+
+const getMonths = () => {
+  return [
+    { value: '1', label: 'Январь' },
+    { value: '2', label: 'Февраль' },
+    { value: '3', label: 'Март' },
+    { value: '4', label: 'Апрель' },
+    { value: '5', label: 'Май' },
+    { value: '6', label: 'Июнь' },
+    { value: '7', label: 'Июль' },
+    { value: '8', label: 'Август' },
+    { value: '9', label: 'Сентябрь' },
+    { value: '10', label: 'Октябрь' },
+    { value: '11', label: 'Ноябрь' },
+    { value: '12', label: 'Декабрь' },
+  ];
+};
+
+const getDays = () => {
+  const days = new Set();
+  duty.value.forEach(item => {
+    const day = new Date(item.date).getDate();
+    days.add(day);
+  });
+  return Array.from(days).sort();
+};
+
 async function fetchStats() {
 	const r = await axios.get("/api/dutySchedule/stats/");
 	stats.value = r.data;
@@ -87,16 +141,37 @@ onBeforeMount(async () => {
 		</form>
 		<div class="row pt-2">
 			<div class="col">
-				<div class="col-auto d-flex align-self-center">
-					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
+				<select class="form-select" v-model="filters.year">
+					<option value="">Все года</option>
+					<option v-for="year in getYears()" :key="year" :value="year">{{ year }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.month">
+					<option value="">Все месяцы</option>
+					<option v-for="month in getMonths()" :key="month.value" :value="month.value">{{ month.label }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" v-model="filters.day">
+					<option value="">Все дни</option>
+					<option v-for="day in getDays()" :key="day" :value="day">{{ day }}</option>
+				</select>
+			</div>
+			<div class="col">
+				<input type="text" class="form-control" v-model="filters.studentName" placeholder="Фильтр по имени студента" />
+			</div>
+		</div>
+		<div class="row pt-2">
+			<div class="col-auto d-flex align-self-center">
+				<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
 					data-bs-target="#statsModal">Статистика</button>
-				</div>
 			</div>
 		</div>
 	</div>
 
 	<div>
-		<div v-for="item in duty" class="duty-item">
+		<div v-for="item in filteredDuty" :key="item.id" class="duty-item">
 			<div>
 				{{ item.date }}
 			</div>
@@ -110,7 +185,9 @@ onBeforeMount(async () => {
 				</button>
 			</div>
 			<div>
-				<button class="btn btn-danger" @click="onDutyRemoveClick(item)"><i class="bi bi-trash"></i></button>
+				<button class="btn btn-danger" @click="onDutyRemoveClick(item)">
+					<i class="bi bi-trash"></i>
+				</button>
 			</div>
 		</div>
 	</div>

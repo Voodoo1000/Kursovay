@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "js-cookie": "^3.0.5",
     "vue-toastification": "^2.0.0-rc.5"
   }
