@@ -1,7 +1,7 @@
 <script setup>
 import axios from "axios";
 import { computed, ref, onBeforeMount } from "vue";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap';
 
 const students = ref([]);
@@ -162,7 +162,8 @@ onBeforeMount(async () => {
           </div>
         </div>
         <div class="col-3">
-          <input class="form-control" type="file" ref="studentsPictureRef" @change="studentAddPictureChange()" required />
+          <input class="form-control" type="file" ref="studentsPictureRef" @change="studentAddPictureChange()"
+            required />
         </div>
         <div class="col-auto">
           <img :src="studentAddImageUrl" style="max-height: 60px;" alt="" />
@@ -202,7 +203,8 @@ onBeforeMount(async () => {
     </div>
     <div class="row">
       <div class="col d-flex gap-2">
-        <button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal" data-bs-target="#statsModal">Статистика</button>
+        <button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
+          data-bs-target="#statsModal">Статистика</button>
         <button class="btn btn-primary" @click="exportToExcel()">Экспорт в Excel</button>
         <button class="btn btn-primary" @click="exportToWord()">Экспорт в Word</button>
       </div>
@@ -216,10 +218,11 @@ onBeforeMount(async () => {
       <div>{{ item.room.number }}</div>
       <div v-show="item.picture">
         <img :src="item.picture" style="max-height: 60px;" data-bs-toggle="modal" data-bs-target="#imageModal"
-				 @click="openImageModal(item.picture)" alt="Картинка студента" />
+          @click="openImageModal(item.picture)" alt="Картинка студента" />
       </div>
       <div class="d-flex justify-content-end">
-        <button class="btn btn-success me-1" @click="onStudentEditClick(item)" data-bs-toggle="modal" data-bs-target="#editStudentModal">
+        <button class="btn btn-success me-1" @click="onStudentEditClick(item)" data-bs-toggle="modal"
+          data-bs-target="#editStudentModal">
           <i class="bi bi-pen"></i>
         </button>
         <button class="btn btn-danger" @click="onStudentRemoveClick(item)">
@@ -228,87 +231,87 @@ onBeforeMount(async () => {
       </div>
     </div>
   </div>
-	<!-- Modal -->
-	<div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Редактировать</h5>
-				</div>
-				<div class="modal-body m">
-					<div class="row p-1">
-						<div class="col">
-							<div class="form-floating">
-								<input type="text" class="form-control" v-model="studentToEdit.name">
-								<label for="floatingInput">ФИО</label>
-							</div>
-						</div>
-					</div>
-					<div class="row p-1">
-						<div class="col">
-							<div class="form-floating">
-								<input type="text" class="form-control" v-model="studentToEdit.group">
-								<label for="floatingInput">Группа</label>
-							</div>
-						</div>
-						<div class="col">
-							<div class="form-floating">
-								<select class="form-select" v-model="studentToEdit.room_id">
-									<option :value="r.id" v-for="r in rooms">{{ r.number }}</option>
-								</select>
-								<label for="floatingInput">Комната</label>
-							</div>
-						</div>
-					</div>
-					<div class="row p-1">
-						<div class="col-6">
-							<input class="form-control" type="file" ref="studentsPictureRefEdit" @change="studentEditPictureChange()"
-								required>
-						</div>
-						<div class="col-auto">
-							<img :src="studentEditImageUrl" style="max-height: 60px;" alt="">
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-						@click="OnUpdateStudentClick()">Сохранить</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Модальное окно для просмотра картинки -->
-	<div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
-		<div class="modal-dialog modal-dialog-centered" role="document">
-			<div class="modal-content">
-				<div class="modal-body text-center">
-					<img :src="selectedImageUrl" alt="Просмотр изображения" class="img-fluid">
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Модальное окно для статистики -->
-	<div class="modal fade" id="statsModal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Статистика студентов</h5>
-				</div>
-				<div class="modal-body">
-					<p>Количество студентов: {{ stats.count }}</p>
-					<p>Максимальный ID студента: {{ stats.max }}</p>
-					<p>Минимальный ID студента: {{ stats.min }}</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-				</div>
-			</div>
-		</div>
-	</div>
+  <!-- Modal -->
+  <div class="modal fade" id="editStudentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Редактировать</h5>
+        </div>
+        <div class="modal-body m">
+          <div class="row p-1">
+            <div class="col">
+              <div class="form-floating">
+                <input type="text" class="form-control" v-model="studentToEdit.name">
+                <label for="floatingInput">ФИО</label>
+              </div>
+            </div>
+          </div>
+          <div class="row p-1">
+            <div class="col">
+              <div class="form-floating">
+                <input type="text" class="form-control" v-model="studentToEdit.group">
+                <label for="floatingInput">Группа</label>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-floating">
+                <select class="form-select" v-model="studentToEdit.room_id">
+                  <option :value="r.id" v-for="r in rooms">{{ r.number }}</option>
+                </select>
+                <label for="floatingInput">Комната</label>
+              </div>
+            </div>
+          </div>
+          <div class="row p-1">
+            <div class="col-6">
+              <input class="form-control" type="file" ref="studentsPictureRefEdit" @change="studentEditPictureChange()"
+                required>
+            </div>
+            <div class="col-auto">
+              <img :src="studentEditImageUrl" style="max-height: 60px;" alt="">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
+            @click="OnUpdateStudentClick()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Модальное окно для просмотра картинки -->
+  <div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <img :src="selectedImageUrl" alt="Просмотр изображения" class="img-fluid">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Модальное окно для статистики -->
+  <div class="modal fade" id="statsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Статистика студентов</h5>
+        </div>
+        <div class="modal-body">
+          <p>Количество студентов: {{ stats.count }}</p>
+          <p>Максимальный ID студента: {{ stats.max }}</p>
+          <p>Минимальный ID студента: {{ stats.min }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 
@@ -327,5 +330,4 @@ onBeforeMount(async () => {
 .student-item img {
   cursor: pointer;
 }
-
 </style>

@@ -10,16 +10,16 @@ const { isAuthenticated,	username,	userId } = storeToRefs(userStore);
 const toast = useToast();
 
 async function logout() {
-    const csrfToken = Cookies.get('csrftoken'); // Получаем CSRF-токен
+    const csrfToken = Cookies.get('csrftoken');
     try {
         const response = await axios.post('/api/user/logout/', {}, {
             headers: {
-                'X-CSRFToken': csrfToken // Убедитесь, что CSRF-токен передан
+                'X-CSRFToken': csrfToken
             }
         });
         if (response.data.success) {
-            userStore.resetUser(); // Используем метод для сброса состояния
-            window.location.reload(); // Обновление страницы
+            userStore.resetUser();
+            window.location.reload();
         } else {
             toast.error('Ошибка выхода, попробуйте еще раз.');
         }
@@ -59,20 +59,13 @@ async function logout() {
 					</ul>
 					<ul class="navbar-nav">
 						<li class="nav-item dropdown">
-							<a class="nav-item dropdown-toggle link" href="#" role="button" data-bs-toggle="dropdown"
-								aria-expanded="false">
+							<a class="nav-item dropdown-toggle link" href="#" role="button" data-bs-toggle="dropdown"	aria-expanded="false">
 								{{ username }}
 							</a>
 							<ul class="dropdown-menu">
-								<li class="nav-item">
-									<router-link class="dropdown-item" to="/login">Войти</router-link>
-								</li>
-								<li class="nav-item">
-									<a class="dropdown-item" @click.prevent="logout()">Выход</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="/admin">Админка</a>
-								</li>
+								<li class="nav-item"><router-link class="dropdown-item" to="/login">Войти</router-link></li>
+								<li class="nav-item"><a class="dropdown-item" @click.prevent="logout()">Выход</a></li>
+								<li><a class="dropdown-item" href="/admin">Админка</a></li>
 							</ul>
 						</li>
 					</ul>
