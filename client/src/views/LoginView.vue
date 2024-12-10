@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router'; // Исправлено
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import useUserStore from '../stores/userStore';
 import Cookies from 'js-cookie'; 
@@ -10,7 +10,7 @@ const user = ref("");
 const password = ref("");
 const userStore = useUserStore();
 const { isAuthenticated, username, userId } = storeToRefs(userStore);
-const router = useRouter(); // Исправлено для получения экземпляра маршрутизатора
+const router = useRouter();
 
 import { useToast } from 'vue-toastification';
 
@@ -32,7 +32,7 @@ async function login() {
         if (response.status === 200) {
             await userStore.fetchUser();
             toast.success("Успешный вход!");
-            router.push("/"); // Теперь router.push должен работать
+            router.push("/");
         } else {
             toast.error("Ошибка входа: " + response.data);
         }
@@ -51,7 +51,6 @@ async function login() {
 				<div class="form-icon"><i class="fa fa-user"></i></div>
 				<h3 class="title">Вход</h3>
 				<form class="form-horizontal" @submit.prevent="login">
-					<!-- Используем prevent для предотвращения отправки формы -->
 					<div class="form-group">
 						<label>Логин</label>
 						<input class="form-control" type="login" placeholder="Введите логин" v-model="user" required>
@@ -60,7 +59,7 @@ async function login() {
 						<label>Пароль</label>
 						<input class="form-control" type="password" placeholder="Введите пароль" v-model="password" required>
 					</div>
-					<button type="submit" class="btn btn-default">Вход</button> <!-- Изменяем тип на submit -->
+					<button type="submit" class="btn btn-default">Вход</button>
 				</form>
 			</div>
 		</div>
@@ -68,7 +67,6 @@ async function login() {
 </template>
 
 <style>
-/* Стили формы остаются без изменений */
 .form-container {
 	background: #ecf0f3;
 	font-family: 'Nunito', sans-serif;

@@ -1,7 +1,8 @@
 <script setup>
 import axios from 'axios';
 import { computed, ref, onBeforeMount } from 'vue';
-import _ from 'lodash';
+import useUserStore from '../stores/userStore';
+import { storeToRefs } from 'pinia';
 
 const rooms = ref([])
 const roomToAdd = ref({
@@ -12,14 +13,18 @@ const roomToEdit = ref({
 });
 const stats = ref({});
 
+const userStore = useUserStore();
+const { isSuperuser, users } = storeToRefs(userStore);
 const filters = ref({
-	number: '',
+	number: "",
+	user: ""
 });
 
 const filteredRooms = computed(() => {
 	return rooms.value.filter((room) => {
 		return (
-			(!filters.value.number || room.number.toString().includes(filters.value.number))
+			(!filters.value.number || room.number.toString().includes(filters.value.number))&&
+      (!filters.value.user || room.user === filters.value.user)
 		);
 	});
 });
@@ -77,13 +82,20 @@ onBeforeMount(async () => {
 				</div>
 			</div>
 		</form>
-		<div class="row pt-2">
-			<div class="col">
+		<div class="mt-3">
+      <h6 class="mb-1">Фильтры</h6>
+		<div class="row pt-2 mb-2 g-2 align-items-center">
+      <div class="col d-flex gap-2">
 				<input type="text" class="form-control" v-model="filters.number" placeholder="Фильтр по номеру комнаты" />
+				<select class="form-select" v-model="filters.user" v-if="isSuperuser">
+          <option value="">Все пользователи</option>
+          <option :value="user.id" v-for="user in users" :key="user.id">{{ user.username }}</option>
+        </select>
 			</div>
 			<div class="col-auto d-flex align-self-center">
 				<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal" data-bs-target="#statsModal">Статистика</button>
 			</div>
+		</div>
 		</div>
 	</div>
 	<div>

@@ -1,7 +1,8 @@
 <script setup>
 import axios from 'axios';
 import { computed, ref, onBeforeMount } from 'vue';
-import _ from 'lodash';
+import useUserStore from '../stores/userStore';
+import { storeToRefs } from 'pinia';
 
 const requests = ref([]);
 const rooms = ref([])
@@ -29,14 +30,17 @@ const requestToEdit = ref({
 });
 const stats = ref({});
 
+const userStore = useUserStore();
+const { isSuperuser, users } = storeToRefs(userStore);
 const filters = ref({
-	description: '',
-	year: '',
-	month: '',
-	day: '',
-	status: '',
-	room: '',
-	staff: ''
+	description: "",
+	year: "",
+	month: "",
+	day: "",
+	status: "",
+	room: "",
+	staff: "",
+	user: ""
 });
 
 const filteredRequests = computed(() => {
@@ -48,10 +52,11 @@ const filteredRequests = computed(() => {
 
 		const itemDate = new Date(item.date);
 		const matchesYear = !filters.value.year || itemDate.getFullYear() === parseInt(filters.value.year);
-		const matchesMonth = !filters.value.month || itemDate.getMonth() + 1 === parseInt(filters.value.month); 
+		const matchesMonth = !filters.value.month || itemDate.getMonth() + 1 === parseInt(filters.value.month);
 		const matchesDay = !filters.value.day || itemDate.getDate() === parseInt(filters.value.day);
 
-		return matchesDescription && matchesStatus && matchesRoom && matchesStaff && matchesYear && matchesMonth && matchesDay;
+		const matchesUser = !filters.value.user || item.user === filters.value.user
+		return matchesDescription && matchesStatus && matchesRoom && matchesStaff && matchesYear && matchesMonth && matchesDay && matchesUser;
 	});
 });
 
@@ -191,47 +196,48 @@ onBeforeMount(async () => {
 				</div>
 			</div>
 		</form>
-		<div class="row pt-2">
-			<div class="col">
-				<input type="text" class="form-control" v-model="filters.description"
-					placeholder="Фильтр по описанию проблемы" />
+		<div class="mt-3">
+			<h6 class="mb-1">Фильтры</h6>
+			<div class="row pt-2 g-2 align-items-center">
+				<div class="col d-flex gap-2">
+					<input type="text" class="form-control" v-model="filters.description"
+						placeholder="Фильтр по описанию проблемы" />
+					<select class="form-select" v-model="filters.year">
+						<option value="">Все года</option>
+						<option v-for="year in getYears()" :key="year" :value="year">{{ year }}</option>
+					</select>
+					<select class="form-select" v-model="filters.month">
+						<option value="">Все месяцы</option>
+						<option v-for="month in getMonths()" :key="month.value" :value="month.value">{{ month.label }}</option>
+					</select>
+					<select class="form-select" v-model="filters.day">
+						<option value="">Все дни</option>
+						<option v-for="day in getDays()" :key="day" :value="day">{{ day }}</option>
+					</select>
+				</div>
 			</div>
-			<div class="col">
-				<select class="form-select" v-model="filters.year">
-					<option value="">Все года</option>
-					<option v-for="year in getYears()" :key="year" :value="year">{{ year }}</option>
-				</select>
-			</div>
-			<div class="col">
-				<select class="form-select" v-model="filters.month">
-					<option value="">Все месяцы</option>
-					<option v-for="month in getMonths()" :key="month.value" :value="month.value">{{ month.label }}</option>
-				</select>
-			</div>
-			<div class="col">
-				<select class="form-select" v-model="filters.day">
-					<option value="">Все дни</option>
-					<option v-for="day in getDays()" :key="day" :value="day">{{ day }}</option>
-				</select>
-			</div>
-			<div class="col">
+		</div>
+		<div class="row pt-2 mb-2 g-2 align-items-center">
+			<div class="col d-flex gap-2">
 				<select class="form-select" v-model="filters.status">
 					<option value="">Все статусы</option>
-					<option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+					<option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}
+					</option>
 				</select>
-			</div>
-			<div class="col">
 				<select class="form-select" v-model="filters.room">
 					<option value="">Все комнаты</option>
 					<option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.number }}</option>
 				</select>
-			</div>
-			<div class="col">
 				<select class="form-select" v-model="filters.staff">
 					<option value="">Все сотрудники</option>
 					<option v-for="s in staff" :key="s.id" :value="s.id">{{ s.post }} ({{ s.name }})</option>
 				</select>
+				<select class="form-select" v-model="filters.user" v-if="isSuperuser">
+					<option value="">Все пользователи</option>
+					<option :value="user.id" v-for="user in users" :key="user.id">{{ user.username }}</option>
+				</select>
 			</div>
+
 		</div>
 		<div class="row pt-2">
 			<div class="col">

@@ -8,6 +8,7 @@ from studentDormitory.models import Student, Room, DutySchedule, Staff, RepairRe
 from studentDormitory.serializers import StudentSerializer, RoomSerializer, DutyScheduleSerializer, StaffSerializer, RepairRequestsSerializer
 from django.db.models import Avg, Count, Max, Min
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import  User
 from django.http import FileResponse
 from openpyxl import Workbook
 from docx import Document 
@@ -30,6 +31,16 @@ class StudentViewset(
 				return qs
 		
 		return qs.filter(user=self.request.user)
+	# def get_queryset(self):
+	# 	qs = super().get_queryset()
+
+	#   # Проверка на суперпользователя и фильтрацию по user
+	# 	user_filter = self.request.query_params.get("user")
+	# 	if user_filter:
+	# 		qs = qs.filter(user__id=user_filter)
+	# 	elif not self.request.user.is_superuser:
+	# 		qs = qs.filter(user=self.request.user)
+	# 	return qs
 	
 	class StatsSerializer(serializers.Serializer):
 		count = serializers.IntegerField()
@@ -242,10 +253,19 @@ class UserViewset(GenericViewSet):
 		if request.user.is_authenticated:
 			data.update({
 				"username": request.user.username,
-				"user_id": request.user.id
+				"user_id": request.user.id,
+				"is_superuser": request.user.is_superuser
 			})
 
 		return Response(data)
+
+	@action(url_path="list", methods=["GET"], detail=False)
+	def list_users(self, request, *args, **kwargs):
+		if not request.user.is_superuser:
+			return Response({"error": "Forbidden"}, status=403)
+        
+		users = User.objects.values("id", "username")
+		return Response(users)
 	
 	@action(url_path="login", methods=["POST"], detail=False)
 	def login(self, request, *args, **kwargs):

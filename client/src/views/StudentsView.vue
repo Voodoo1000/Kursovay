@@ -1,8 +1,8 @@
 <script setup>
 import axios from "axios";
 import { computed, ref, onBeforeMount } from "vue";
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap';
+import useUserStore from '../stores/userStore';
+import { storeToRefs } from 'pinia';
 
 const students = ref([]);
 const rooms = ref([]);
@@ -23,11 +23,13 @@ const studentEditImageUrl = ref();
 const selectedImageUrl = ref();
 const stats = ref({});
 
-
+const userStore = useUserStore();
+const { isSuperuser, users } = storeToRefs(userStore);
 const filters = ref({
   name: "",
   group: "",
   room: "",
+  user: ""
 });
 
 const uniqueGroups = computed(() => {
@@ -39,10 +41,12 @@ const filteredStudents = computed(() => {
     return (
       (!filters.value.name || student.name.toLowerCase().includes(filters.value.name.toLowerCase())) &&
       (!filters.value.group || student.group === filters.value.group) &&
-      (!filters.value.room || student.room.number.toString().includes(filters.value.room))
+      (!filters.value.room || student.room.number.toString().includes(filters.value.room)) &&
+      (!filters.value.user || student.user === filters.value.user)
     );
   });
 });
+
 
 function openImageModal(imageUrl) {
   selectedImageUrl.value = imageUrl;
@@ -187,21 +191,24 @@ onBeforeMount(async () => {
         </div>
       </div>
     </form>
-    <div class="row pt-2 mb-2">
-      <div class="col">
-        <input type="text" class="form-control" v-model="filters.name" placeholder="Фильтр по ФИО" />
-      </div>
-      <div class="col">
-        <select class="form-select" v-model="filters.group">
-          <option value="">Все группы</option>
-          <option :value="group" v-for="group in uniqueGroups">{{ group }}</option>
-        </select>
-      </div>
-      <div class="col">
-        <input type="text" class="form-control" v-model="filters.room" placeholder="Фильтр по комнате" />
+    <div class="mt-3">
+      <h6 class="mb-1">Фильтры</h6>
+      <div class="row pt-2 mb-2 g-2 align-items-center">
+        <div class="col d-flex gap-2">
+          <input type="text" class="form-control" v-model="filters.name" placeholder="Фильтр по ФИО" />
+          <select class="form-select" v-model="filters.group">
+            <option value="">Все группы</option>
+            <option :value="group" v-for="group in uniqueGroups">{{ group }}</option>
+          </select>
+          <input type="text" class="form-control" v-model="filters.room" placeholder="Фильтр по комнате" />
+          <select class="form-select" v-model="filters.user" v-if="isSuperuser">
+            <option value="">Все пользователи</option>
+            <option :value="user.id" v-for="user in users" :key="user.id">{{ user.username }}</option>
+          </select>
+        </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row mt-3">
       <div class="col d-flex gap-2">
         <button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
           data-bs-target="#statsModal">Статистика</button>

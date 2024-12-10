@@ -1,7 +1,8 @@
 <script setup>
 import axios from 'axios';
 import { computed, ref, onBeforeMount } from 'vue';
-import _ from 'lodash';
+import useUserStore from '../stores/userStore';
+import { storeToRefs } from 'pinia';
 
 const staff = ref([]);
 const staffToAdd = ref({
@@ -19,16 +20,20 @@ const staffEditImageUrl = ref();
 const selectedImageUrl = ref();
 const stats = ref({});
 
+const userStore = useUserStore();
+const { isSuperuser, users } = storeToRefs(userStore);
 const filters = ref({
-	name: '',
-	post: '',
+	name: "",
+	post: "",
+	user: ""
 });
 
 const filteredStaff = computed(() => {
 	return staff.value.filter((member) => {
 		return (
 			(!filters.value.name || member.name.toLowerCase().includes(filters.value.name.toLowerCase())) &&
-			(!filters.value.post || member.post.toLowerCase().includes(filters.value.post.toLowerCase()))
+			(!filters.value.post || member.post.toLowerCase().includes(filters.value.post.toLowerCase())) &&
+			(!filters.value.user || member.user === filters.value.user)
 		);
 	});
 });
@@ -133,16 +138,21 @@ onBeforeMount(async () => {
 				</div>
 			</div>
 		</form>
-		<div class="row pt-2">
-			<div class="col">
-				<input type="text" class="form-control" v-model="filters.name" placeholder="Фильтр по имени" />
-			</div>
-			<div class="col">
-				<input type="text" class="form-control" v-model="filters.post" placeholder="Фильтр по должности" />
-			</div>
-			<div class="col-auto d-flex align-self-center">
-				<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
-					data-bs-target="#statsModal">Статистика</button>
+		<div class="mt-3">
+			<h6 class="mb-1">Фильтры</h6>
+			<div class="row pt-2 mb-2 g-2 align-items-center">
+				<div class="col d-flex gap-2">
+					<input type="text" class="form-control" v-model="filters.name" placeholder="Фильтр по имени" />
+					<input type="text" class="form-control" v-model="filters.post" placeholder="Фильтр по должности" />
+					<select class="form-select" v-model="filters.user" v-if="isSuperuser">
+						<option value="">Все пользователи</option>
+						<option :value="user.id" v-for="user in users" :key="user.id">{{ user.username }}</option>
+					</select>
+				</div>
+				<div class="col-auto d-flex align-self-center">
+					<button class="btn btn-success" @click="fetchStats()" data-bs-toggle="modal"
+						data-bs-target="#statsModal">Статистика</button>
+				</div>
 			</div>
 		</div>
 	</div>
