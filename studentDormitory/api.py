@@ -31,16 +31,6 @@ class StudentViewset(
 				return qs
 		
 		return qs.filter(user=self.request.user)
-	# def get_queryset(self):
-	# 	qs = super().get_queryset()
-
-	#   # Проверка на суперпользователя и фильтрацию по user
-	# 	user_filter = self.request.query_params.get("user")
-	# 	if user_filter:
-	# 		qs = qs.filter(user__id=user_filter)
-	# 	elif not self.request.user.is_superuser:
-	# 		qs = qs.filter(user=self.request.user)
-	# 	return qs
 	
 	class StatsSerializer(serializers.Serializer):
 		count = serializers.IntegerField()
